@@ -59,3 +59,27 @@ TensorBoardの`DISTRIBUTIONS, HISTGRAM`を見るとある程度わかる。
 ### tools.AttrDict
 
 これは正直わかりやすい。dict()を改良したもので属性としてKeyにアクセスできて、lock機能がある。withでunlockしてからじゃないとアクセスできない。immutableというはず。なぜこんなものが必要なのかよくわからん
+
+### tools.batch_env
+
+### tools.count_weights
+
+用途は正直イマイチわかっていない。しかしやっていることは明確で、すべての重みの数を数え上げている。
+
+勉強になったのは、`import re`から、`.match`したものは除外するというプログラムだ。    
+あと、ニューラルネットワークのモデルの定義を`with tf.name_scope`内で書いても、`x.name`には反映されてない。    
+モデル名に反映させたかったら、`tf.variable_scope`を使わないといけないっぽい
+
+### tools.in_graph_batch_env
+
+### tools.in_graph_env
+
+### tools.loop
+
+### tools.nested
+
+### tools.simulate
+
+### tools.streaming_mean
+
+### tools.wrappers
