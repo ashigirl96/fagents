@@ -9,6 +9,10 @@ $python -m agents.scripts.visualize --logdir=/path/to/logdir/<time>-<config> --o
 
 ## 概要
 
+<img src="./assets/graph1.png" alt="サンプル" width="1000">
+
+<img src="./assets/graph2.png" alt="サンプル" width="300">
+
 |ファイル|内容|
 |:----|:--|
 |configs.py|タスクやアルゴリズムを特定する実験configurations|
@@ -82,8 +86,23 @@ TensorBoardの`DISTRIBUTIONS, HISTGRAM`を見るとある程度わかる。
 ちょっとわからないのだけど、`self.step`は`self.reset()`しても`0`が代入されていない。
 
 勉強になったのは、Attributorの使い方である。これは、`__getattr__(self, name)`からGymのenvに直接アクセスしてる。   
-他には管理している変数の名前空間は`environment`であるのに対して、`simulate()`の中では、`environment/simulate`という名前空間を使っている。
+他には管理している変数の名前空間は`environment`であるのに対して、`simulate()`の中では、`environment/simulate`という名前空間を使っている。    
+型がいっぱいあって、担保しきれない場合は、`raise NotImplementError()`と呼ぶ。
 
+```python
+      observ, reward, done = tf.py_func(
+          lambda a: self._env.step(a)[:3], [action],
+          [observ_dtype, tf.float32, tf.bool], name='step')
+```
+
+この書き方は普通に勉強になるかなあ。
+
+```python
+      if action.dtype in (tf.float16, tf.float32, tf.float64):
+        action = tf.check_numerics(action, 'action')
+```
+
+みたいに、どういう値がAgent側で担保しない場合は、環境が担保する。
 
 ### tools.loop
 
