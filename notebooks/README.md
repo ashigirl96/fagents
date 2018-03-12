@@ -129,12 +129,18 @@ env.close()
 基本的に
 
 1. 親プロセス、子プロセスを作る
-2. 子プロセスに`self._worker`の仕事をさせる。
-3. `reset(), step()`のようなインターフェース(`close()`は除く)は親プロセスが`self.call()`として内部で子プロセスに`payload`を投げている。
+2. 子プロセスに`self._worker`の仕事をさせる。ここできちんと理解しないといけないのが、子プロセスは`KeyboardInterupt`のような例外が起こらなければ、一生回り続けているということ。
+3. `reset(), step()`のようなインターフェース(`close()`は除く)をユーザが呼び出す
+    1. reset()やstep()内部でself.call()をする。
+        2. self.call()の中ではメッセージとname(`reset`, `step`, ...)を子プロセスにsendする
+    2. 子プロセスがそれをrecvして、constructor(i.g. `gym.Env`)からgetattrしてきて、再びsendする
+    3. self.call()はcallableなreceiveを返す。ここで子プロセスからの情報をrecvして、齟齬がないようにする。
+    
+
 
 勉強になったことで、まずはテストから。   
 `MockEnvironment`を使っている。呼び出し可能な状態の環境を渡すために、`functions.partial`ですべての引数を渡している。こうすることによって、`gym.make(...)`と同じようなインスタンス(ライク)なものができる。モックすごい。
 
 あと、`atexit.Register`で`self.close`をしている。`atexit.Register`は、正常終了したときに呼び出したい関数を呼んでくれるRegister。書いて思ったけどGoの`defer`に似てるかもしれない
 
-クラスで状態フラグの管理をしている。このフラグは`_CALL, _CLOSE, _ACCESS, _EXCEPTION, _RESULT`。
+クラスで状態フラグを定数として管理をしている。このフラグは`_CALL, _CLOSE, _ACCESS, _EXCEPTION, _RESULT`。あ、クラス変数か。

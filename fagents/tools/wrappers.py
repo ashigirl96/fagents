@@ -14,6 +14,14 @@ import multiprocessing
 import traceback
 import atexit
 
+# import logging, coloredlogs
+#
+# logger = multiprocessing.log_to_stderr()
+# logger.setLevel(logging.WARN)
+#
+# coloredlogs.install(level='WARN')
+# coloredlogs.install(level='WARN', logger=logger)
+
 
 class AutoReset(object):
   """Automatically reset enviroment when the episode is done."""
@@ -66,7 +74,7 @@ class ExternalProcess(object):
     """
     self._conn, conn = multiprocessing.Pipe()
     self._process = multiprocessing.Process(
-        target=self._worker, args=(constructor, conn))
+      target=self._worker, args=(constructor, conn))
     atexit.register(self.close)
     self._process.start()
     self._observ_space = None
