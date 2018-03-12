@@ -56,7 +56,7 @@ class MockEnvironment(object):
     return observ, reward, done, info
 
   def reset(self):
-    duration = self._random.randint(self._min_duration, self._max_duration)
+    duration = self._random.randint(self._min_duration, self._max_duration + 1)
     self.steps.append(0)
     self.durations.append(duration)
     return self._current_observation()

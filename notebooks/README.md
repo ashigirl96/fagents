@@ -113,3 +113,28 @@ TensorBoardの`DISTRIBUTIONS, HISTGRAM`を見るとある程度わかる。
 ### tools.streaming_mean
 
 ### tools.wrappers
+
+テストでの使われ方。
+
+```python
+env = tools.ExternalProcess(original_env)
+env.reset()
+env.step(...)
+env.step(...)
+env.close()
+```
+
+一見、`gym.Env`との違いがわからない。
+
+基本的に
+
+1. 親プロセス、子プロセスを作る
+2. 子プロセスに`self._worker`の仕事をさせる。
+3. `reset(), step()`のようなインターフェース(`close()`は除く)は親プロセスが`self.call()`として内部で子プロセスに`payload`を投げている。
+
+勉強になったことで、まずはテストから。   
+`MockEnvironment`を使っている。呼び出し可能な状態の環境を渡すために、`functions.partial`ですべての引数を渡している。こうすることによって、`gym.make(...)`と同じようなインスタンス(ライク)なものができる。モックすごい。
+
+あと、`atexit.Register`で`self.close`をしている。`atexit.Register`は、正常終了したときに呼び出したい関数を呼んでくれるRegister。書いて思ったけどGoの`defer`に似てるかもしれない
+
+クラスで状態フラグの管理をしている。このフラグは`_CALL, _CLOSE, _ACCESS, _EXCEPTION, _RESULT`。
