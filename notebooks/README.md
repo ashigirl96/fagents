@@ -74,6 +74,17 @@ TensorBoardの`DISTRIBUTIONS, HISTGRAM`を見るとある程度わかる。
 
 ### tools.in_graph_env
 
+`InGrapEnv`を実装した。このクラスはこの`agents`ライブラリで全く使われていない。念のため、テストを書いた。
+
+このクラスは、`tf.Variable`で観測、報酬、端末フラグを管理しており、端的に言えば`gym.Env`のラッパーである。   
+`simulate()`が環境の更新関数なのかな。`gym.Env.step`に似ている。違いは、`simulate()`はTensorFlow仕様になっているから、`assign`を使っている。`self._step`というクラス変数があるけど、これは`global_step`に近い変数で、このインスタンスが何step目かを管理している
+
+ちょっとわからないのだけど、`self.step`は`self.reset()`しても`0`が代入されていない。
+
+勉強になったのは、Attributorの使い方である。これは、`__getattr__(self, name)`からGymのenvに直接アクセスしてる。   
+他には管理している変数の名前空間は`environment`であるのに対して、`simulate()`の中では、`environment/simulate`という名前空間を使っている。
+
+
 ### tools.loop
 
 ### tools.nested
