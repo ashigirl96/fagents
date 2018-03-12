@@ -72,7 +72,10 @@ TensorBoardの`DISTRIBUTIONS, HISTGRAM`を見るとある程度わかる。
 
 ↑正直意味がわからん。
 
-`blocking`って同期のことで、`blocking=False`のときは、実行せずに`ExternalProcess.recv`が帰ってくる。それをExternalProcess内で実行するか、listとしてGroupで持たせてから実行するかで意味が変わってくる←わかるかよ
+`blocking`って同期のことで、`blocking=False`のときは、実行せずに`ExternalProcess._recv`が帰ってくる。それをExternalProcess内で実行するか、listとしてGroupで持たせてから実行するかで意味が変わってくる←わかるかよ
+
+↑多分だけど、`message, payload = self._conn.recv()`←親プロセスのrecvは実行されてるけど、`payload`を実行するかどうかで、`self._worker`つまり子プロセスが実行するかどうかなんじゃないだろうか…←知るか
+
 
 
 
