@@ -66,6 +66,18 @@ TensorBoardの`DISTRIBUTIONS, HISTGRAM`を見るとある程度わかる。
 
 ### tools.batch_env
 
+複数の環境を組み合わせて、それらを一括して実行します。
+
+環境を並行して進めるためには、環境は後で結果を受け取る代わりに、呼び出し可能なものを返すようにstepとresetの関数に対して `blocking = False`引数をサポートしなければなりません。
+
+↑正直意味がわからん。
+
+`blocking`って同期のことで、`blocking=False`のときは、実行せずに`ExternalProcess.recv`が帰ってくる。それをExternalProcess内で実行するか、listとしてGroupで持たせてから実行するかで意味が変わってくる←わかるかよ
+
+
+
+
+
 ### tools.count_weights
 
 用途は正直イマイチわかっていない。しかしやっていることは明確で、すべての重みの数を数え上げている。
@@ -144,3 +156,16 @@ env.close()
 あと、`atexit.Register`で`self.close`をしている。`atexit.Register`は、正常終了したときに呼び出したい関数を呼んでくれるRegister。書いて思ったけどGoの`defer`に似てるかもしれない
 
 クラスで状態フラグを定数として管理をしている。このフラグは`_CALL, _CLOSE, _ACCESS, _EXCEPTION, _RESULT`。あ、クラス変数か。
+
+あと、子プロセスに永遠と仕事させて、フラグでメタ的に`send, recv`に情報を与えてるのが面白かった。
+
+
+## scripts.utility
+
+アルゴリズムを実装するためのutility.
+
+### define_simulation_graph(batch_env, algo_cls, config):
+
+### define_batch_env(constructor, num_agents, env_processes)
+
+### define_saver()
