@@ -77,6 +77,7 @@ class BatchEnv(object):
         for env, action in zip(self._envs, actions)]
       transitions = [transition() for transition in transitions]
     observs, rewards, dones, infos = zip(*transitions)
+    # NOTE: IT's the best important implement of this code.
     observ = np.stack(observs)
     reward = np.stack(rewards)
     done = np.stack(dones)

@@ -5,6 +5,7 @@ from __future__ import division
 from __future__ import print_function
 
 import tensorflow as tf
+from fagents import tools
 import gym.spaces
 
 
@@ -16,7 +17,7 @@ class InGraphBatchEnv(object):
   flags are held in according variables.
   """
 
-  def __init__(self, batch_env):
+  def __init__(self, batch_env: tools.BatchEnv):
     """Batch of environments inside the TensorFlow graph.
 
     Args:
