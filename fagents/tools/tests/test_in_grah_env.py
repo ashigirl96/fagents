@@ -1,8 +1,6 @@
 """Test an OpenAI Gym environment into the TensorFlow Graph."""
 
 from fagents.tools import InGraphEnv
-from agents.tools import InGraphEnv as I
-I.step
 # from agents.tools import InGraphEnv
 
 import tensorflow as tf
