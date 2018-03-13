@@ -65,4 +65,4 @@ class MockEnvironment(object):
     return self._random.uniform(0, 1, self._observ_shape).astype(np.float32)
 
   def _current_reward(self):
-    return self._random.uniform(-1, 1).astype(np.float32)
+    return np.float32(self._random.uniform(-1, 1))

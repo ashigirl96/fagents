@@ -1,10 +1,10 @@
 """Test an OpenAI Gym batch environment into the TensorFlow Graph."""
 
-from fagents import tools
+from agents import tools
+from fagents.tools import MockEnvironment
 import functools
 
 import tensorflow as tf
-import gym
 
 
 def _define_batch_env(constructor, num_agents, env_processes, blocking):
@@ -21,27 +21,50 @@ def _define_batch_env(constructor, num_agents, env_processes, blocking):
 
 class TestInGraphBatchEnv(tf.test.TestCase):
 
-  def test_batch_getattr(self):
+  def setUp(self):
     constructor = functools.partial(
-      tools.MockEnvironment,
+      MockEnvironment,
       observ_shape=(2, 3), action_shape=(4,),
-      min_duration=5, max_duration=5)
-    batch_env = _define_batch_env(constructor, 5, True, False)
-    self.assertEqual(batch_env.observ.shape, (5, 2, 3), msg="observ.shape")
-    self.assertEqual(batch_env.action.shape, (5, 4), msg="action.shape")
+      min_duration=10, max_duration=10)
+    self.batch_env = _define_batch_env(constructor, 5, True, False)
+
+  def test_batch_getattr(self):
+    self.assertEqual(self.batch_env.observ.shape, (5, 2, 3), msg="observ.shape")
+    self.assertEqual(self.batch_env.action.shape, (5, 4), msg="action.shape")
 
   def test_batch_reset(self):
-    constructor = functools.partial(
-      tools.MockEnvironment,
-      observ_shape=(2, 3), action_shape=(4,),
-      min_duration=5, max_duration=5)
-    batch_env = _define_batch_env(constructor, 5, True, False)
-    observ = batch_env.reset()
+    observ = self.batch_env.reset()
 
     init = tf.global_variables_initializer()
     with tf.Session() as sess:
       init.run()
+      self.assertEqual(sess.run(observ).shape, (5, 2, 3))
+
+  def test_batch_step(self):
+    """For test different observ of first step and second step."""
+    observ = self.batch_env.reset()
+    step = self.batch_env.simulate(self.batch_env.action)
+    init = tf.global_variables_initializer()
+
+    with tf.Session() as sess:
+      init.run()
       sess.run(observ)
+      sess.run(step)
+      first_step = sess.run(self.batch_env.observ)
+      sess.run(step)
+      second_step = sess.run(self.batch_env.observ)
+      self.assertFalse((first_step == second_step).all())
+
+  def test_batch_close(self):
+    step = self.batch_env.simulate(self.batch_env.action)
+    init = tf.global_variables_initializer()
+    with self.assertRaises(Exception):
+      with tf.Session() as sess:
+        init.run()
+
+        sess.run(self.batch_env.reset())
+        self.batch_env.close()
+        sess.run(step)
 
 
 if __name__ == '__main__':

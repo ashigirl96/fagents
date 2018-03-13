@@ -91,6 +91,26 @@ TensorBoardの`DISTRIBUTIONS, HISTGRAM`を見るとある程度わかる。
 
 ### tools.in_graph_batch_env
 
+1. 複数の`tools.ExternalProcess`
+2. それをまとめる`tools.BatchEnv`
+3. in-Graph化する`tools.InGraphBatchEnv`
+
+という流れです。
+
+`tools.in_graph_env`とほとんど内容が変わらない。リストで扱ってるわけじゃなくて、`tools.BatchEnv`のインスタンスが渡されているから`__len__()`でBatchサイズを指定する必要がある
+
+正直なんでこんなことをするかわからないけど、
+
+```python
+    with tf.control_dependencies([
+      tf.scatter_update(self._observ, indices, observ),
+      tf.scatter_update(self._reward, indices, reward),
+      tf.scatter_update(self._done, indices, done)]):
+      return tf.identity(observ)
+```      
+
+をしている。`tf.scatter_update`と`tf.assign`は同値なはず。それはあくまで`indices`を与えていない場合。与えればもっと自由度のある書き方ができる。おそらく、どっかの`reset`時にもっと自由度のある書き方をしてるんじゃないだろうか。
+
 ### tools.in_graph_env
 
 `InGrapEnv`を実装した。このクラスはこの`agents`ライブラリで全く使われていない。念のため、テストを書いた。
