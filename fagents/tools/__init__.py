@@ -12,4 +12,4 @@ from .count_weights import count_weights
 from .in_graph_env import InGraphEnv
 from .batch_env import BatchEnv
 from .in_graph_batch_env import InGraphBatchEnv
-
+from .simulate import simulate
