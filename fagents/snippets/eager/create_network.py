@@ -20,7 +20,6 @@ tfe.enable_eager_execution()
 
 def foo():
 	model = MNISTModel()
-	print(model.updates)
 	batch = tf.zeros([2, 784])
 	print(batch.shape)
 	result = model(batch)
