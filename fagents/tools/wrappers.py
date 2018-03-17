@@ -220,3 +220,89 @@ class ExternalProcess(object):
       tf.logging.error('Error in environment process: {}'.format(stacktrace))
       conn.send((self._EXCEPTION, stacktrace))
     conn.close()
+
+
+class ConvertTo32Bit(object):
+  """Convert data types of an OpenAI Gym environment to 32 bit."""
+
+  def __init__(self, env):
+    """Convert data types of an OpenAI Gym environment to 32 bit.
+
+    Args:
+      env: OpenAI Gym environment.
+    """
+    self._env = env
+
+  def __getattr__(self, name):
+    """Forward unimplemented attributes to the original environment.
+
+    Args:
+      name: Attribute that was accessed.
+
+    Returns:
+      Value behind the attribute name in the wrapped environment.
+    """
+    return getattr(self._env, name)
+
+  def step(self, action):
+    """Forward action to the wrapped environment.
+
+    Args:
+      action: Action to apply to the environment.
+
+    Raises:
+      ValueError: Invalid action.
+
+    Returns:
+      Converted observation, converted reward, done flag, and info object.
+    """
+    observ, reward, done, info = self._env.step(action)
+    observ = self._convert_observ(observ)
+    reward = self._convert_reward(reward)
+    return observ, reward, done, info
+
+  def reset(self):
+    """Reset the environment and convert the resulting observation.
+
+    Returns:
+      Converted observation.
+    """
+    observ = self._env.reset()
+    observ = self._convert_observ(observ)
+    return observ
+
+  def _convert_observ(self, observ):
+    """Convert the observation to 32 bits.
+
+    Args:
+      observ: Numpy observation.
+
+    Raises:
+      ValueError: Observation contains infinite values.
+
+    Returns:
+      Numpy observation with 32-bit data type.
+    """
+    if np.isinf(observ).any():
+      raise ValueError('Infinite observation encountered.')
+    if observ.dtype == np.float64:
+      return observ.astype(np.float32)
+    if observ.dtype == np.int64:
+      return observ.astype(np.int32)
+    return observ
+
+  def _convert_reward(self, reward):
+    """Convert the reward to 32 bits.
+
+    Args:
+      reward: Numpy reward.
+
+    Raises:
+      ValueError: Reward contains infinite values.
+
+    Returns:
+      Numpy reward with 32-bit data type.
+    """
+    if not np.isfinite(reward).all():
+      raise ValueError('Infinite reward encountered.')
+    return np.array(reward, dtype=np.float32)

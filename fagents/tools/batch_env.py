@@ -65,8 +65,9 @@ class BatchEnv(object):
       Batch of observations, rewards, and done flags.
     """
     for index, (env, action) in enumerate(zip(self._envs, actions)):
-      message = 'Invalid action at index {}: {}'
-      raise ValueError(message.format(index, action))
+      if not env.action_space.contains(action):
+        message = 'Invalid action at index {}: {}'
+        raise ValueError(message.format(index, action))
     if self._blocking:
       transitions = [
         env.step(action)

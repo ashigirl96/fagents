@@ -145,7 +145,71 @@ TensorBoardの`DISTRIBUTIONS, HISTGRAM`を見るとある程度わかる。
 
 ### tools.simulate
 
+- score: それぞれのエージェントのrewardの総和
+- length: それぞれのエージェントのsteps数
+
+
+
+**勉強できたこと**
+
+なぜ、`_define_begin_episode(agent_indices)`とかあるのにクラスではなく`simulate`が関数なのか気になった。それは、インスタンス変数とかを所持する必要がないからだと思う。
+
+必要なのは、`done, score, summary`だけ。だから、それだけ返すようなものを持っておけば良い
+
+```python
+core_summary = tf.cond(
+      tf.logical_and(log, tf.cast(mean_score.count, tf.bool)),
+      lambda: tf.summary.scalar('mean_score', mean_score.clear()),
+      str
+```      
+
+```python
+In [9]: tf.where([True, False, True, True])
+Out[9]:
+<tf.Tensor: id=12, shape=(3, 1), dtype=int64, numpy=
+array([[0],
+       [2],
+       [3]])>
+
+
+In [10]: tf.where([True, False, True, True])[:, 0]
+Out[10]: <tf.Tensor: id=19, shape=(3,), dtype=int64, numpy=array([0, 2, 3])>
+```
+
+```
+In [14]: tf.where([True, False, True, True])
+Out[14]:
+<tf.Tensor: id=36, shape=(3, 1), dtype=int64, numpy=
+array([[0],
+       [2],
+       [3]])>
+
+
+In [15]: tf.where([True, False, True, True]).shape.ndims
+Out[15]: 2
+```
+
+一瞬わけわからんけど、`tf.logical_and`は`tf.cond`に併用できる。あと、`.count`みたいな初期値状態に対してbool値と見立ててれる。
+
+けど、よくよく考えてみれば、下みたいな方が単純なような気がする
+
+```python
+if log and bool(mean_score.count):
+	return tf.summary....
+else:
+	return str	
+```
+
+
+
+
 ### tools.streaming_mean
+
+`tools.simulate`の中で使われる常にある値を追いかけながら、カウントも同時に確認するので、平均を求めることができる。
+
+`submit`で`assign_add`の`tf.group`を返す
+
+今回、`agents`
 
 ### tools.wrappers
 
