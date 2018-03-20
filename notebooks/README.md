@@ -149,8 +149,40 @@ TensorBoardの`DISTRIBUTIONS, HISTGRAM`を見るとある程度わかる。
 
 `test_not_done`から。
 
+`Loop()`のインスタンスに`.add_phase()`というインスタンスメソッドで登録していく。これは勉強になる。
 
+envの終了条件(`done`)を`(step + 1) % 2 == 0`のときである。一般的に、envの終了条件はPoleが倒れたときとかである。
 
+テストでは、
+```python
+In [28]: [i for i in range(9) if (i + 1 )%2 == 0]
+Out[28]: [1, 3, 5, 7]
+```
+のときである。
+
+そしてレポート(scoreを返すとき)ときは3回に1回なので、
+
+```python
+In [32]: [i for i in range(9) if (i+1) % 3 == 0]
+Out[32]: [2, 5, 8]
+```
+
+のときである。
+
+```python
+# Step:   0 1 2 3 4 5 6 7 8
+# Score:  0 1 2 3 4 5 6 7 8
+# Done:     x   x   x   x
+# Report:     x     x     x
+```
+
+は正しいことがわかる。
+
+`add_phase`の引数である`steps`が何を意味してるかなんとなくわかった。phaseを何回連続、scoreを返すかというものっぽい。
+
+`test_phases_feed`を見たらわかるけど、1を1回、2(score=1)を3回連続(steps=3)、3(score=3)を2回(steps=2)となっている
+
+`report_every`はその何回目の`steps`でscoreを`yield`するかということ。
 
 
 ### tools.nested
