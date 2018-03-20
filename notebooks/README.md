@@ -141,6 +141,18 @@ TensorBoardの`DISTRIBUTIONS, HISTGRAM`を見るとある程度わかる。
 
 ### tools.loop
 
+主に強化学習の`loop`部分に当たる。
+
+しかし、あまりにも分かりづらい。難しい。
+
+だから、テストから理解していこうかなって思う
+
+`test_not_done`から。
+
+
+
+
+
 ### tools.nested
 
 ### tools.simulate
@@ -161,9 +173,7 @@ core_summary = tf.cond(
       tf.logical_and(log, tf.cast(mean_score.count, tf.bool)),
       lambda: tf.summary.scalar('mean_score', mean_score.clear()),
       str
-```      
-
-```python
+      
 In [9]: tf.where([True, False, True, True])
 Out[9]:
 <tf.Tensor: id=12, shape=(3, 1), dtype=int64, numpy=
@@ -174,9 +184,6 @@ array([[0],
 
 In [10]: tf.where([True, False, True, True])[:, 0]
 Out[10]: <tf.Tensor: id=19, shape=(3,), dtype=int64, numpy=array([0, 2, 3])>
-```
-
-```
 In [14]: tf.where([True, False, True, True])
 Out[14]:
 <tf.Tensor: id=36, shape=(3, 1), dtype=int64, numpy=

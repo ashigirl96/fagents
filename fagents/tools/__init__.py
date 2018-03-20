@@ -13,3 +13,4 @@ from .in_graph_env import InGraphEnv
 from .batch_env import BatchEnv
 from .in_graph_batch_env import InGraphBatchEnv
 from .simulate import simulate
+from .loop import Loop
