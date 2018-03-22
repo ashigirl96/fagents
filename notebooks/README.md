@@ -185,6 +185,11 @@ Out[32]: [2, 5, 8]
 `report_every`はその何回目の`steps`でscoreを`yield`するかということ。
 
 
+勉強にはならなかったけど、すげえなって思ったことが、`phase`が増えるたびに、おっかける1つの`global_step`ですべての`phase`を追いかける必要がある。そこで、`_find_current_phase`みたいなクラスメソッドで現在の`phase`を探し出しているのがすげえってなった。
+
+`_is_every_steps`で、storeするべきか、scoreをyieldするべきかなど制御しているのがすごい。
+
+
 ### tools.nested
 
 ### tools.simulate
@@ -251,6 +256,21 @@ else:
 今回、`agents`
 
 ### tools.wrappers
+
+### tools.wrappers.LimitDuration
+
+まず勉強になったことは、`Wrapper`とはなにかということかな。親クラスとか確かにできないことはないけど、
+`self._env = env`と元のオブジェクトをもっておいたら、`__getattr__`でもそれ以外の関数・定数にも対応できる
+
+`tools.wrappers.LimitDuration`に関しては、指定されたステップ数のあとにエピソードを終了するというものだ。
+
+だから、`self._step`のようなものをもっておけば、指定したDurationより大きくなったときに強制的に`Done=True`にして終了させることができる
+
+### tools.wrappers.ClipAction
+
+てっきり、元のenvの`action_space`が`(-0.4, 0.4)`だった場合に、`-inf`が`-0.4`に対応するみたいなものかと思ったらそうじゃなくて、きっちり`(-0.4, 0.4)`内にぶった切るというものだった。
+
+### tools.wrappers.ExternalProcess
 
 テストでの使われ方。
 
